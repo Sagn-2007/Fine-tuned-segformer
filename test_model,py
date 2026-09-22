@@ -1,0 +1,49 @@
+import torch
+
+from transformers import (
+    SegformerForSemanticSegmentation,
+    SegformerImageProcessor
+)
+
+
+device = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
+
+print("Using:", device)
+
+
+model_name = "nvidia/segformer-b0-finetuned-ade-512-512"
+
+
+# Processor
+processor = SegformerImageProcessor.from_pretrained(
+    model_name
+)
+
+
+# Pretrained model
+model = SegformerForSemanticSegmentation.from_pretrained(
+    model_name
+)
+
+
+
+print(model.config.num_labels)
+
+
+# Change 150-class head → 2-class head
+model.decode_head.classifier = torch.nn.Conv2d(
+    256,
+    2,
+    kernel_size=1
+)
+
+model.config.num_labels = 2
+
+model = model.to(device)
+
+print("\nModified classifier:")
+print(model.decode_head.classifier)
+
+print("Number of labels:", model.config.num_labels)
