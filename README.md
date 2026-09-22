@@ -919,3 +919,53 @@ Qualitative Visualization
 ```
 
 The resulting model and visualization pipeline provide a complete example of applying a pretrained Transformer-based segmentation model to a new road-segmentation dataset.
+## SegFormer-B2 Experiment
+
+To investigate whether a larger SegFormer backbone could improve road
+segmentation performance, a second experiment was performed using:
+
+- Model: `nvidia/segformer-b2-finetuned-ade-512-512`
+- Dataset: KITTI Road
+- Training samples: 231
+- Validation samples: 58
+- Input size: 256 × 512
+- Batch size: 4
+- Epochs: 20
+- Loss: CrossEntropyLoss
+- Optimizer: Adam
+
+### Fine-Tuning Strategy
+
+Stages 0 and 1 were frozen, while stages 2 and 3 and the decoder head
+were fine-tuned.
+
+| Component | Learning Rate |
+|---|---:|
+| Stage 2 | 5e-6 |
+| Stage 3 | 1e-5 |
+| Decoder Head | 5e-4 |
+
+### Results
+
+| Model | IoU | Dice |
+|---|---:|---:|
+| SegFormer-B0 | 90.27% | 94.89% |
+| SegFormer-B2 | **92.95%** | **96.34%** |
+
+The B2 model improved validation IoU by **2.68 percentage points**
+compared with the B0 model.
+
+### B2 Visualizations
+
+The visual predictions generated during evaluation are available in:
+
+`results_b2/`
+
+The experiment scripts are:
+
+- `train_b2.py`
+- `evaluate_b2.py`
+- `visualise_b2.py`
+
+The trained checkpoint is not included in the repository because model
+weights are excluded by `.gitignore`.
